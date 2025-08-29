@@ -1,0 +1,44 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+packages:
+  - git
+  - curl
+  - wget
+  - build-essential
+  - neovim
+  - ripgrep
+  - ufw
+
+users:
+  - name: nathan
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin, sudo
+    ssh_import_id: gh:neeythann
+
+runcmd:
+  - sed -i 's/^PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+  - sed -i 's/^#PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+  - systemctl restart ssh
+  # see https://stackoverflow.com/a/54155630
+  - sed -i 's/^root:.*$/root:*:16231:0:99999:7:::/' /etc/shadow
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow OpenSSH
+  - ufw --force enable
+  - curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest |
+      rg browser_download_url |
+      rg linux_x86_64.tar.gz |
+      cut -d '"' -f 4 |
+      wget -qi - -O /tmp/lazygit.tar.gz
+  - tar xf /tmp/lazygit.tar.gz -C /tmp
+  - install /tmp/lazygit /usr/local/bin/lazygit
+  - rm /tmp/lazygit /tmp/lazygit.tar.gz
+  - mkdir -p /home/nathan/.config
+  - mkdir -p /home/nathan/.local/bin
+  - chown -R nathan:nathan /home/nathan/.config
+  - chown -R nathan:nathan /home/nathan/.local
+  - sudo -u nathan git clone https://github.com/neeythann/astronvim /home/nathan/.config/nvim
+  - sudo -u nathan nvim --headless +q
