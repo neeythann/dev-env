@@ -1,7 +1,7 @@
 # neeythann/dev-env
 
-`dev-env` is my personal Infrastructure-as-Code (IaC) setup to spin up an  
-ephemeral development environment on [Hetzner Cloud](https://www.hetzner.com/cloud).
+`dev-env` is a repository for my personal Infrastructure-as-Code (IaC)
+environment setups on [Hetzner Cloud](https://www.hetzner.com/cloud).
 
 Designed for fast prototyping and throwaway environments, it provisions a  
 ready-to-code remote workspace with my preferred development tools  
@@ -12,6 +12,7 @@ Cloud-init.
 
 - Terraform v1.13.1 or later
 - Hetzner Cloud API key with r/w permissions
+- id_ed25519 key
 
 ## Installation
 

@@ -19,7 +19,7 @@ variable "hcloud_token" {
 resource "hcloud_server" "server" {
   count       = var.server_count
   name        = "${var.server_location}-dev-${count.index + 1}"
-  server_type = "cpx11"
+  server_type = "${var.server_type}"
   image       = "debian-13"
   location    = var.server_location
   ssh_keys    = [hcloud_ssh_key.main.id]
@@ -47,5 +47,10 @@ resource "hcloud_ssh_key" "main" {
 }
 
 output "server_ip" {
-  value = hcloud_server.server[*].ipv4_address
+  value = [
+    for server in hcloud_server.server : {
+      ipv4 = server.ipv4_address
+      ipv6 = server.ipv6_address
+    }
+  ]
 }
